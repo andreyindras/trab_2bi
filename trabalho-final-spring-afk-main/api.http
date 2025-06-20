@@ -173,13 +173,28 @@ Content-Type: application/json
 
 ###
 
-### 4.4 Listar todos os Eventos
+### 4.4 Criar Evento com data passada (para testes posteriores)
+POST http://localhost:8080/events
+Content-Type: application/json
+
+{
+  "nome": "Evento com Data Passada",
+  "descricao": "Evento para testar regra de data passada",
+  "data": "2025-01-01T10:00:00",
+  "limiteParticipantes": 20,
+  "idDepartamento": 1,
+  "idsPalestrantes": [1]
+}
+
+###
+
+### 4.5 Listar todos os Eventos
 GET http://localhost:8080/events
 Accept: application/json
 
 ###
 
-### 4.5 Buscar Evento por ID
+### 4.6 Buscar Evento por ID
 GET http://localhost:8080/events/1
 Accept: application/json
 
@@ -284,6 +299,76 @@ Content-Type: application/json
 
 ###
 
+### 7.4 Tentar inscrever em evento com data passada (deve falhar)
+POST http://localhost:8080/events/4/registrations
+Content-Type: application/json
+
+{
+  "idAluno": 3
+}
+
+###
+
+### 7.5 Criar evento com limite baixo para testar lotação
+POST http://localhost:8080/events
+Content-Type: application/json
+
+{
+  "nome": "Evento com Limite Baixo",
+  "descricao": "Para testar limite de vagas",
+  "data": "2025-08-01T14:00:00",
+  "limiteParticipantes": 1,
+  "idDepartamento": 1,
+  "idsPalestrantes": [1]
+}
+
+###
+
+### 7.6 Inscrever primeiro aluno (deve funcionar)
+POST http://localhost:8080/events/5/registrations
+Content-Type: application/json
+
+{
+  "idAluno": 3
+}
+
+###
+
+### 7.7 Tentar inscrever segundo aluno no evento lotado (deve falhar)
+POST http://localhost:8080/events/5/registrations
+Content-Type: application/json
+
+{
+  "idAluno": 2
+}
+
+###
+
+### 7.8 Criar evento conflitante para testar horário
+POST http://localhost:8080/events
+Content-Type: application/json
+
+{
+  "nome": "Evento Conflitante",
+  "descricao": "Para testar conflito de horário",
+  "data": "2025-07-15T15:00:00",
+  "limiteParticipantes": 50,
+  "idDepartamento": 2,
+  "idsPalestrantes": [2]
+}
+
+###
+
+### 7.9 Tentar inscrever aluno em evento com horário conflitante (deve falhar)
+POST http://localhost:8080/events/6/registrations
+Content-Type: application/json
+
+{
+  "idAluno": 1
+}
+
+###
+
 ### 8. OPERAÇÕES DE ATUALIZAÇÃO
 
 ### 8.1 Atualizar Departamento
@@ -344,6 +429,11 @@ DELETE http://localhost:8080/registrations/1
 
 ###
 
+### 9.2 Tentar cancelar inscrição já cancelada (deve falhar)
+DELETE http://localhost:8080/registrations/1
+
+###
+
 ### 10. VERIFICAR ESTADO APÓS OPERAÇÕES
 
 ### 10.1 Verificar evento após cancelamento
@@ -372,6 +462,66 @@ DELETE http://localhost:8080/students/3
 
 ### 11.3 Verificar se aluno foi excluído
 GET http://localhost:8080/students/3
+Accept: application/json
+
+###
+
+### 11.4 Excluir evento (deve remover inscrições automaticamente)
+DELETE http://localhost:8080/events/2
+
+###
+
+### 11.5 Verificar se evento foi excluído
+GET http://localhost:8080/events/2
+Accept: application/json
+
+###
+
+### 11.6 Excluir departamento
+DELETE http://localhost:8080/departments/2
+
+###
+
+### 12. TESTES DE VALIDAÇÃO ADICCIONAIS
+
+### 12.1 Tentar criar aluno com matrícula duplicada
+POST http://localhost:8080/students
+Content-Type: application/json
+
+{
+  "nome": "Aluno Duplicado",
+  "matricula": "2021001",
+  "curso": "Teste"
+}
+
+###
+
+### 12.2 Verificar se evento mostra status correto de vagas
+GET http://localhost:8080/events/5
+Accept: application/json
+
+###
+
+### 12.3 Buscar departamento inexistente (deve falhar)
+GET http://localhost:8080/departments/999
+Accept: application/json
+
+###
+
+### 12.4 Buscar aluno inexistente (deve falhar)
+GET http://localhost:8080/students/999
+Accept: application/json
+
+###
+
+### 12.5 Buscar palestrante inexistente (deve falhar)
+GET http://localhost:8080/speakers/999
+Accept: application/json
+
+###
+
+### 12.6 Buscar evento inexistente (deve falhar)
+GET http://localhost:8080/events/999
 Accept: application/json
 
 ###
